@@ -1,12 +1,37 @@
 import XCTest
-@testable import MyLibrary
+import MyLibrary
 
 final class MyLibraryTests: XCTestCase {
-    func testExample() throws {
-        // XCTest Documentation
-        // https://developer.apple.com/documentation/xctest
 
-        // Defining Test Cases and Test Methods
-        // https://developer.apple.com/documentation/xctest/defining_test_cases_and_test_methods
+    private var manager: NetworkManaging!
+
+    override func setUp() {
+        super.setUp()
+
+        manager = MockGitHubNetworkManger()
     }
+
+    override func tearDown() {
+        super.tearDown()
+
+        manager = nil
+    }
+
+    func testGetUsers() async throws {
+       let url = URL(string: "https://api.github.com/users")!
+
+        let user: [User] = try await manager.request(
+            url: url,
+            method: "GET",
+            headers: ["Content-Type": "application/json"]
+        )
+        print(user.count)
+        XCTAssertFalse(user.isEmpty, "users list is empty")
+    }
+}
+
+struct User: Decodable {
+
+    let id: Int
+    let login: String
 }
