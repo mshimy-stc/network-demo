@@ -8,7 +8,7 @@ final class MyLibraryTests: XCTestCase {
     override func setUp() {
         super.setUp()
 
-        manager = MockGitHubNetworkManger()
+        manager = NetworkManager()
     }
 
     override func tearDown() {
@@ -27,6 +27,18 @@ final class MyLibraryTests: XCTestCase {
         )
         print(user.count)
         XCTAssertFalse(user.isEmpty, "users list is empty")
+    }
+
+    func testGetUser() async throws {
+        let url = URL(string: "https://api.github.com/users/octocat")!
+
+        let user: User = try await manager.request(
+            url: url,
+            method: "GET",
+            headers: ["Content-Type": "application/json"]
+        )
+
+        XCTAssertEqual(user.login, "octocat")
     }
 }
 

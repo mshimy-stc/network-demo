@@ -7,8 +7,6 @@
 
 import Foundation
 
-
-
 public class NetworkManager: NetworkManaging {
 
     public init() { }
@@ -24,7 +22,20 @@ public class NetworkManager: NetworkManaging {
 
         let (data, response) = try await URLSession.shared.data(for: request)
         print(response)
+        if let log = prettyPrintedJSON(data) {
+            print(log)
+        }
         return data
+    }
+
+    private func prettyPrintedJSON(_ data: Data) -> String? {
+        do {
+            let jsonObject = try JSONSerialization.jsonObject(with: data, options: [])
+            let jsonData = try JSONSerialization.data(withJSONObject: jsonObject, options: .prettyPrinted)
+            return String(data: jsonData, encoding: .utf8)
+        } catch {
+            return String(data: data, encoding: .utf8)
+        }
     }
 
     public func request<T: Decodable>(
